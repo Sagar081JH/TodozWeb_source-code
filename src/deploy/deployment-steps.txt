@@ -14,4 +14,4 @@ git remote add origin git@github.com:Sagar081JH/TodozWeb.git
 
 npm run deploy
 
-git@github.com:Sagar081JH/TodozWeb_source-code.git
+git remote add origin git@github.com:Sagar081JH/TodozWeb_source-code.git
