@@ -9,3 +9,7 @@ open package.json and type below obj :
 inside scripts paste :
 "predeploy":"npm run build",
 "deploy":"gh-pages -d build"
+
+git remote add origin git@github.com:Sagar081JH/TodozWeb.git
+
+npm run deploy
