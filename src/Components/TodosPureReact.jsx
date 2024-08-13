@@ -140,7 +140,7 @@ export default function TodosPureReact() {
     <>
       <div className="p-1">
         <div
-          className={`d-flex border rounded justify-content-between ${
+          className={`d-flex border rounded justify-content-between mb-3 ${
             isToggleClicked
               ? "text-warning bg-dark  border-secondary"
               : "text-success bg-light"
@@ -168,15 +168,6 @@ export default function TodosPureReact() {
               )}
             </span>
           </div>
-        </div>
-
-        <div
-          id="myname"
-          className={`text-end mt-2 mb-2 pt-2 pb-2 ${
-            isToggleClicked ? "text-warning" : "text-primary"
-          }`}
-        >
-          <span className="border rounded p-2">{myName}</span>
         </div>
 
         <div className="row">
