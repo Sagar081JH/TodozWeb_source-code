@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import { useState } from "react";
 import { Tooltip } from "react-tooltip";
-import Todo from "./Todo";
 import "../App.css";
 import axios from "axios";
+import { Base_URL } from "./Base_URL";
 
 export default function TodosWithSpring() {
   const [todoHeadline, setTodoHeadline] = useState("");
@@ -28,8 +28,10 @@ export default function TodosWithSpring() {
 
   const [apiError, setApiError] = useState("");
 
-  useEffect(() => {
-    fetch("http://localhost:8080/todos")
+  console.log("Todos :", todos);
+
+  function fetchTodos() {
+    fetch(`${Base_URL}/todos`)
       .then(function (response) {
         if (response.status === 200) {
           console.log("status " + response.status);
@@ -59,60 +61,84 @@ export default function TodosWithSpring() {
           error.message
         );
       });
+  }
+
+  useEffect(() => {
+    fetchTodos();
   }, [todos]);
 
   function addTask(headline, description) {
     if (headline === "" || description === "") {
       if (description === "") {
         setDescriptionError("Please enter description...");
+      } else {
+        setDescriptionError("");
       }
       if (headline === "") {
         setHeadlineError("Please enter a headline...");
+      } else {
+        setHeadlineError("");
       }
     } else {
       axios
-        .post("http://localhost:8080/todos", {
+        .post(`${Base_URL}/todos`, {
           headline: headline,
           description: description,
         })
-        .then((response) => response.json())
+        .then(function (response) {
+          if (response.status === 201) {
+            fetchTodos();
+            setApiError("");
+            setActionMessage("Task Added !!!");
+            setMsgColor("green");
+          }
+        })
         .catch((err) => {
           setApiError("Failed to add a task due to : " + err.message);
+          setActionMessage("");
           console.log("error :" + err.message);
         });
 
-      if (apiError === "") {
-        setActionMessage("Task Added !!!");
-
-        setHeadlineError("");
-        setDescriptionError("");
-        setMsgColor("green");
-        setTimeout(() => {
-          setActionMessage("");
-        }, 2000);
-      }
+      setTimeout(() => {
+        setActionMessage("");
+      }, 2000);
+      clearFields();
     }
-    setTimeout(() => {
-      setHeadlineError("");
-      setDescriptionError("");
-    }, 2000);
   }
 
   function deleteTask(id) {
-    axios
-      .delete(`http://localhost:8080/todos/delete/${id}`)
-      .then((response) => response.json)
-      .catch((err) => {
-        setApiError("Deletion failed due to : " + err.message);
-        console.log("delete : " + err);
-      });
-
+    if (todos.length <= 1) {
+      setTimeout(() => {
+        axios
+          .delete(`${Base_URL}/todos/delete/${id}`)
+          .then(function (response) {
+            if (response.status == 200) {
+              setTodos([]);
+            }
+          })
+          .catch((err) => {
+            setApiError("Deletion failed due to : " + err.message);
+          });
+      }, 1000);
+    } else {
+      axios
+        .delete(`${Base_URL}/todos/delete/${id}`)
+        .then(function (response) {
+          if (response.status === 200) {
+            fetchTodos();
+            setMsgColor("red");
+            setActionMessage("Task Deleted !!!");
+          }
+        })
+        .catch((err) => {
+          setActionMessage("");
+          setApiError("Deletion failed due to : " + err.message);
+        });
+    }
     if (apiError === "") {
-      setActionMessage("Task Deleted !!!");
-      setMsgColor("red");
       setTimeout(() => {
         setActionMessage("");
-      }, 3000);
+      }, 1000);
     }
   }
 
@@ -130,12 +156,11 @@ export default function TodosWithSpring() {
 
   function saveHeadline(newHeadline, todo) {
     axios
-      .put(`http://localhost:8080/todos/update/${todo.todoId}`, {
+      .put(`${Base_URL}/todos/update/${todo.todoId}`, {
         todoId: todo.todoId,
         headline: newHeadline,
         description: todo.description,
       })
-      .then((response) => response.json)
       .catch((err) => {
         setApiError("Headline upadate failed due to : " + err.message);
         console.log("saveHeadline : " + err);
@@ -154,12 +179,11 @@ export default function TodosWithSpring() {
 
   function saveDescription(editedDescription, todo) {
     axios
-      .put(`http://localhost:8080/todos/update/${todo.todoId}`, {
+      .put(`${Base_URL}/todos/update/${todo.todoId}`, {
         todoId: todo.todoId,
         headline: todo.headline,
         description: editedDescription,
       })
-      .then((response) => response.json)
       .catch((err) => {
         setApiError("Description upadate failed due to : " + err.message);
         console.log("saveDesc : " + err);
@@ -193,8 +217,6 @@ export default function TodosWithSpring() {
   return (
     <>
       <div className="container p-3">
-        <Todo todos={todos}></Todo>
-
         <div className="navbar fixed-top mt-4 pt-5">
           <div
             className={`navbar fixed-top mx-4 text-center ${
@@ -314,250 +336,257 @@ export default function TodosWithSpring() {
               Add Task
             </button>
           </div>
-          <div className="row justify-content-start">
+
+          <div className="text-center mt-2 pt-2" style={{ color: msgColor }}>
+            {actionMessage}
+            <div className="text-danger">{apiError.toString()}</div>
+          </div>
+          <hr className={`${isToggleClicked ? "text-light" : "text-dark"}`} />
+        </div>
+
+        {todos && todos.length > 0 && (
+          <div className="">
             <div
-              className={`col-3 fs-3 ${
-                isToggleClicked ? "text-light" : "text-dark"
-              }`}
+              className={`fs-3 ${isToggleClicked ? "text-light" : "text-dark"}`}
             >
               Tasks
             </div>
-
-            <div className="col-6 text-start p-2" style={{ color: msgColor }}>
-              {actionMessage}
-              <div className="text-danger">{apiError.toString()}</div>
-            </div>
-            <hr className={`${isToggleClicked ? "text-light" : "text-dark"}`} />
-          </div>
-
-          <div>
             <div>
-              <table
-                className={`table ${
-                  isToggleClicked ? "table-dark" : "table-light"
-                }`}
-              >
-                <thead>
-                  <tr>
-                    {/* <th
-                      scope="col"
-                      className={`${
-                        isToggleClicked ? "text-info" : "text-primary"
-                      }`}
-                    >
-                      #
-                    </th> */}
-                    <th
-                      scope="col"
-                      className={`${
-                        isToggleClicked ? "text-info" : "text-primary"
-                      }`}
-                    >
-                      Headline
-                    </th>
-                    <th
-                      scope="col"
-                      className={`text-center ${
-                        isToggleClicked ? "text-info" : "text-primary"
-                      }`}
-                    >
-                      Action
-                    </th>
-                    <th
-                      scope="col"
-                      className={`${
-                        isToggleClicked ? "text-info" : "text-primary"
-                      }`}
-                    >
-                      Description
-                    </th>
-                    <th
-                      scope="col"
-                      className={`text-center ${
-                        isToggleClicked ? "text-info" : "text-primary"
-                      }`}
-                    >
-                      Action
-                    </th>
-                    <th
-                      scope="col"
-                      style={{ marginLeft: "50px", paddingLeft: "50px" }}
-                      className={`text-center ${
-                        isToggleClicked ? "text-info" : "text-primary"
-                      }`}
-                    >
-                      Delete
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {todos.map((todo) => (
+              <div>
+                <table
+                  className={`table ${
+                    isToggleClicked ? "table-dark" : "table-light"
+                  }`}
+                >
+                  <thead>
                     <tr>
-                      {/* <td scope="row">{todo.todoId}</td> */}
-                      <td>
-                        {isEditHeadlineClicked &&
-                        editedTodoId === todo.todoId ? (
-                          <span>
-                            <input
-                              id={`${
-                                isToggleClicked
-                                  ? "headlineEditInputDark"
-                                  : "headlineEditInputLight"
-                              }`}
-                              className={`form-control ${
-                                isToggleClicked
-                                  ? "bg-dark text-light"
-                                  : "bg-light text-dark"
-                              }`}
-                              placeholder="edit headline..."
-                              value={editedHeadline}
-                              onChange={(e) =>
-                                setEditedHeadline(e.target.value)
-                              }
-                            />
-                          </span>
-                        ) : (
-                          <>{todo.headline}</>
-                        )}
-                      </td>
-                      <td className="text-center">
-                        {isEditHeadlineClicked &&
-                        editedTodoId === todo.todoId ? (
-                          <span>
-                            <button
-                              className="btn text-dark btn-outline-success mx-2"
-                              onClick={() => saveHeadline(editedHeadline, todo)}
-                            >
-                              &#x2611;
-                            </button>
-                            <button
-                              className="btn text-danger btn-outline-success mx-2"
-                              onClick={() => setIsEditHeadlineClicked(false)}
-                            >
-                              &#x2612;
-                            </button>
-                          </span>
-                        ) : (
-                          <></>
-                        )}
-                        {!isEditHeadlineClicked ? (
-                          <span className="p-2">
-                            <Tooltip anchorSelect=".edit-headline" place="top">
-                              Edit Headline
-                            </Tooltip>
-                            <a className="edit-headline">
-                              <button
-                                type="button"
-                                onClick={() => editTaskHeadline(todo)}
-                                className={`btn ${
-                                  isToggleClicked
-                                    ? "text-light btn-outline-success"
-                                    : "text-dark btn-outline-info"
-                                }`}
-                              >
-                                &#9998;
-                              </button>
-                            </a>
-                          </span>
-                        ) : (
-                          <></>
-                        )}
-                      </td>
-                      <td>
-                        {isEditDescriptionClicked &&
-                        editedTodoId === todo.todoId ? (
-                          <span>
-                            <input
-                              id={`${
-                                isToggleClicked
-                                  ? "descEditInputDark"
-                                  : "descEditInputLight"
-                              }`}
-                              className={`form-control ${
-                                isToggleClicked
-                                  ? "bg-dark text-light"
-                                  : "bg-light text-dark"
-                              }`}
-                              placeholder="edit description..."
-                              value={editedDescription}
-                              onChange={(e) =>
-                                setEditedDescription(e.target.value)
-                              }
-                            />
-                          </span>
-                        ) : (
-                          <>{todo.description}</>
-                        )}
-                      </td>
-                      <td className="text-center">
-                        {isEditDescriptionClicked &&
-                        editedTodoId === todo.todoId ? (
-                          <span>
-                            <button
-                              className="text-dark btn btn-outline-success"
-                              onClick={() =>
-                                saveDescription(editedDescription, todo)
-                              }
-                            >
-                              &#x2611;
-                            </button>
-                            <button
-                              className="btn text-danger btn-outline-success mx-2"
-                              onClick={() => setIsEditDescriptionClicked(false)}
-                            >
-                              &#x2612;
-                            </button>
-                          </span>
-                        ) : (
-                          <></>
-                        )}
-                        {!isEditDescriptionClicked ? (
-                          <span className="p-1">
-                            <Tooltip anchorSelect=".edit-desc" place="top">
-                              Edit Description
-                            </Tooltip>
-                            <a className="edit-desc">
-                              <button
-                                type="button"
-                                onClick={() => editTaskDescription(todo)}
-                                className={`btn ${
-                                  isToggleClicked
-                                    ? "text-light btn-outline-success "
-                                    : "text-dark btn-outline-info"
-                                }`}
-                              >
-                                &#9998;
-                              </button>
-                            </a>
-                          </span>
-                        ) : (
-                          <></>
-                        )}
-                      </td>
-                      <td
-                        style={{ paddingLeft: "50px" }}
-                        className="text-center"
+                      {/* <th
+                    scope="col"
+                    className={`${
+                      isToggleClicked ? "text-info" : "text-primary"
+                    }`}
+                  >
+                    #
+                  </th> */}
+                      <th
+                        scope="col"
+                        className={`${
+                          isToggleClicked ? "text-info" : "text-primary"
+                        }`}
                       >
-                        <Tooltip anchorSelect=".delete" place="top">
-                          Delete Task
-                        </Tooltip>
-                        <a className="delete">
-                          <button
-                            type="button"
-                            onClick={() => deleteTask(todo.todoId)}
-                            className="btn btn-danger px-2"
-                          >
-                            &#9003;
-                          </button>
-                        </a>
-                      </td>
+                        Headline
+                      </th>
+                      <th
+                        scope="col"
+                        className={`text-center ${
+                          isToggleClicked ? "text-info" : "text-primary"
+                        }`}
+                      >
+                        Action
+                      </th>
+                      <th
+                        scope="col"
+                        className={`${
+                          isToggleClicked ? "text-info" : "text-primary"
+                        }`}
+                      >
+                        Description
+                      </th>
+                      <th
+                        scope="col"
+                        className={`text-center ${
+                          isToggleClicked ? "text-info" : "text-primary"
+                        }`}
+                      >
+                        Action
+                      </th>
+                      <th
+                        scope="col"
+                        style={{ marginLeft: "50px", paddingLeft: "50px" }}
+                        className={`text-center ${
+                          isToggleClicked ? "text-info" : "text-primary"
+                        }`}
+                      >
+                        Delete
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {todos.map((todo) => (
+                      <tr>
+                        {/* <td scope="row">{todo.todoId}</td> */}
+                        <td>
+                          {isEditHeadlineClicked &&
+                          editedTodoId === todo.todoId ? (
+                            <span>
+                              <input
+                                id={`${
+                                  isToggleClicked
+                                    ? "headlineEditInputDark"
+                                    : "headlineEditInputLight"
+                                }`}
+                                className={`form-control ${
+                                  isToggleClicked
+                                    ? "bg-dark text-light"
+                                    : "bg-light text-dark"
+                                }`}
+                                placeholder="edit headline..."
+                                value={editedHeadline}
+                                onChange={(e) =>
+                                  setEditedHeadline(e.target.value)
+                                }
+                              />
+                            </span>
+                          ) : (
+                            <>{todo.headline}</>
+                          )}
+                        </td>
+                        <td className="text-center">
+                          {isEditHeadlineClicked &&
+                          editedTodoId === todo.todoId ? (
+                            <span>
+                              <button
+                                className="btn text-dark btn-outline-success mx-2"
+                                onClick={() =>
+                                  saveHeadline(editedHeadline, todo)
+                                }
+                              >
+                                &#x2611;
+                              </button>
+                              <button
+                                className="btn text-danger btn-outline-success mx-2"
+                                onClick={() => setIsEditHeadlineClicked(false)}
+                              >
+                                &#x2612;
+                              </button>
+                            </span>
+                          ) : (
+                            <></>
+                          )}
+                          {!isEditHeadlineClicked ? (
+                            <span className="p-2">
+                              <Tooltip
+                                anchorSelect=".edit-headline"
+                                place="top"
+                              >
+                                Edit Headline
+                              </Tooltip>
+                              <a className="edit-headline">
+                                <button
+                                  type="button"
+                                  onClick={() => editTaskHeadline(todo)}
+                                  className={`btn ${
+                                    isToggleClicked
+                                      ? "text-light btn-outline-success"
+                                      : "text-dark btn-outline-info"
+                                  }`}
+                                >
+                                  &#9998;
+                                </button>
+                              </a>
+                            </span>
+                          ) : (
+                            <></>
+                          )}
+                        </td>
+                        <td>
+                          {isEditDescriptionClicked &&
+                          editedTodoId === todo.todoId ? (
+                            <span>
+                              <input
+                                id={`${
+                                  isToggleClicked
+                                    ? "descEditInputDark"
+                                    : "descEditInputLight"
+                                }`}
+                                className={`form-control ${
+                                  isToggleClicked
+                                    ? "bg-dark text-light"
+                                    : "bg-light text-dark"
+                                }`}
+                                placeholder="edit description..."
+                                value={editedDescription}
+                                onChange={(e) =>
+                                  setEditedDescription(e.target.value)
+                                }
+                              />
+                            </span>
+                          ) : (
+                            <>{todo.description}</>
+                          )}
+                        </td>
+                        <td className="text-center">
+                          {isEditDescriptionClicked &&
+                          editedTodoId === todo.todoId ? (
+                            <span>
+                              <button
+                                className="text-dark btn btn-outline-success"
+                                onClick={() =>
+                                  saveDescription(editedDescription, todo)
+                                }
+                              >
+                                &#x2611;
+                              </button>
+                              <button
+                                className="btn text-danger btn-outline-success mx-2"
+                                onClick={() =>
+                                  setIsEditDescriptionClicked(false)
+                                }
+                              >
+                                &#x2612;
+                              </button>
+                            </span>
+                          ) : (
+                            <></>
+                          )}
+                          {!isEditDescriptionClicked ? (
+                            <span className="p-1">
+                              <Tooltip anchorSelect=".edit-desc" place="top">
+                                Edit Description
+                              </Tooltip>
+                              <a className="edit-desc">
+                                <button
+                                  type="button"
+                                  onClick={() => editTaskDescription(todo)}
+                                  className={`btn ${
+                                    isToggleClicked
+                                      ? "text-light btn-outline-success "
+                                      : "text-dark btn-outline-info"
+                                  }`}
+                                >
+                                  &#9998;
+                                </button>
+                              </a>
+                            </span>
+                          ) : (
+                            <></>
+                          )}
+                        </td>
+                        <td
+                          style={{ paddingLeft: "50px" }}
+                          className="text-center"
+                        >
+                          <Tooltip anchorSelect=".delete" place="top">
+                            Delete Task
+                          </Tooltip>
+                          <a className="delete">
+                            <button
+                              type="button"
+                              onClick={() => deleteTask(todo.todoId)}
+                              className="btn btn-danger px-2"
+                            >
+                              &#9003;
+                            </button>
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
