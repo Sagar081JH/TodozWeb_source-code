@@ -287,7 +287,7 @@ export default function TodosPureReact() {
             <div class="row mt-2 pt-2 justify-content-start">
               <div
                 className={`col-6 fs-3 text-center ${
-                  isToggleClicked ? "text-light" : "text-dark"
+                  isToggleClicked ? "text-light" : ""
                 }`}
               >
                 Task List
@@ -300,7 +300,15 @@ export default function TodosPureReact() {
               />
             </div>
             <div>
-              {todos.length > 0 ? (
+              {todos.length === 0 ? (
+                <div
+                  className={`text-center ${
+                    isToggleClicked ? "text-light" : ""
+                  }`}
+                >
+                  No tasks available ! Please add.
+                </div>
+              ) : (
                 <table
                   className={`table ${
                     isToggleClicked ? "table-dark" : "table-light"
@@ -324,7 +332,10 @@ export default function TodosPureReact() {
                       >
                         Description
                       </th>
-                      <th scope="col" className={`col-4 text-end text-danger`}>
+                      <th
+                        scope="col"
+                        className={`col-4 text-center text-danger`}
+                      >
                         Edit/Delete
                       </th>
                     </tr>
@@ -336,7 +347,7 @@ export default function TodosPureReact() {
                         <td className="col-4">{todo.headline}</td>
                         <td className="col-4">{todo.description}</td>
 
-                        <td className="col-4 p-2 text-end">
+                        <td className="col-4 p-2 text-center">
                           <span className="text-start">
                             <a className="edit-desc">
                               <button
@@ -353,7 +364,7 @@ export default function TodosPureReact() {
                                 editedTodoId === todo.id ? (
                                   <span
                                     id="edit-cancel"
-                                    className={`${
+                                    className={` ${
                                       isToggleClicked ? "text-light" : ""
                                     }`}
                                   >
@@ -365,9 +376,6 @@ export default function TodosPureReact() {
                               </button>
                             </a>
                           </span>
-                          {/* <Tooltip anchorSelect=".delete" place="top">
-                            Delete Task
-                          </Tooltip> */}
 
                           <span className="text-end mx-1">
                             <button
@@ -443,8 +451,6 @@ export default function TodosPureReact() {
                     ))}
                   </tbody>
                 </table>
-              ) : (
-                <></>
               )}
             </div>
           </div>
