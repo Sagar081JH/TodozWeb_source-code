@@ -19,34 +19,23 @@ export default function TodosPureReact() {
   const [editedTodoId, setEditedTodoId] = useState(0);
 
   const [isEditTaskClicked, setIsEditTaskClicked] = useState(false);
-  const [isEditHeadlineClicked, setIsEditHeadlineClicked] = useState(false);
-  const [editedHeadline, setEditedHeadline] = useState(todoHeadline);
 
-  const [isEditDescriptionClicked, setIsEditDescriptionClicked] =
-    useState(false);
-  const [editedDescription, setEditedDescription] = useState(todoDescription);
-
-  const [myName, setMyname] = useState("Developer : Sagar Ghumare");
+  const myName = "Developer : Sagar Ghumare";
 
   const [isToggleClicked, setIsToggleClicked] = useState("");
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setMyname("");
-  //   }, 2000);
-  // }, []);
   const [headlineBorder, setHeadlineBorder] = useState("");
   const [descInputBorderColor, setDescInputBorderColor] = useState("");
   function addTask(headline, description) {
-    if (headline == "" || description == "") {
-      if (description == "") {
+    if (headline === "" || description === "") {
+      if (description === "") {
         setDescriptionError("Empty Description !");
         setDescInputBorderColor("border-danger");
       } else {
         setDescriptionError("");
         setDescInputBorderColor("");
       }
-      if (headline == "") {
+      if (headline === "") {
         setHeadlineError("Empty Headline !");
         setHeadlineBorder("border-danger");
       } else {
@@ -72,10 +61,6 @@ export default function TodosPureReact() {
       }, 2000);
       clearField();
     }
-    // setTimeout(() => {
-    //   setHeadlineError("");
-    //   setDescriptionError("");
-    // }, 2000);
   }
 
   const [editDeleteMsg, setEditDeleteMsg] = useState("");
@@ -115,7 +100,7 @@ export default function TodosPureReact() {
     let index = 0;
 
     for (let i = 0; i < todos.length; i++) {
-      if (todos[i].id == editedTodoId) {
+      if (todos[i].id === editedTodoId) {
         break;
       }
       index = index + 1;
@@ -323,14 +308,6 @@ export default function TodosPureReact() {
                 >
                   <thead>
                     <tr className="row">
-                      {/* <th
-                        scope="col"
-                        className={`${
-                          isToggleClicked ? "text-info" : "text-primary"
-                        }`}
-                      >
-                        #
-                      </th> */}
                       <th
                         scope="col"
                         className={`col-4 ${
@@ -361,9 +338,6 @@ export default function TodosPureReact() {
 
                         <td className="col-4 p-2 text-end">
                           <span className="text-start">
-                            {/* <Tooltip anchorSelect=".edit-desc" place="top">
-                                Edit Description
-                              </Tooltip> */}
                             <a className="edit-desc">
                               <button
                                 id="edit-btn"
@@ -464,15 +438,6 @@ export default function TodosPureReact() {
                               </div>
                             </div>
                           </span>
-                          {/* <a className="delete">
-                            <button
-                              type="button"
-                              onClick={() => deleteTask(todo.id)}
-                              className="btn btn-danger px-2"
-                            >
-                              &#9003;
-                            </button>
-                          </a> */}
                         </td>
                       </tr>
                     ))}
