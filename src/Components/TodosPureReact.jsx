@@ -153,9 +153,9 @@ export default function TodosPureReact() {
   }
   return (
     <>
-      <div className="container p-2">
+      <div className="p-1">
         <div
-          className={`d-flex border p-1 rounded justify-content-between ${
+          className={`d-flex border rounded justify-content-between ${
             isToggleClicked
               ? "text-warning bg-dark  border-secondary"
               : "text-success bg-light"
@@ -194,119 +194,126 @@ export default function TodosPureReact() {
           <span className="border rounded p-2">{myName}</span>
         </div>
 
-        <div>
-          <div
-            className={`border rounded p-4 ${
-              isToggleClicked ? "border-secondary" : ""
-            }`}
-          >
-            <div class="mb-3 row">
-              <label
-                for={`${
-                  isToggleClicked ? "headlineInputDark" : "headlineInputLight"
-                }`}
-                className={`col-6 fw-bold form-label text-start ${
-                  isToggleClicked ? "text-info" : "text-primary"
-                }`}
-              >
-                Task headline
-              </label>
-              <span className={`col-6 text-end text-danger`}>
-                {headlineError}
-              </span>
-              <input
-                type="text"
-                id={`${
-                  isToggleClicked ? "headlineInputDark" : "headlineInputLight"
-                }`}
-                placeholder="write your task headline..."
-                class="form-control"
-                className={`form-control input border-secondary ${headlineBorder} ${
-                  isToggleClicked ? "bg-dark text-light " : "bg-light text-dark"
-                } `}
-                value={todoHeadline}
-                onChange={(e) => setTodoHeadline(e.target.value)}
-              />
-            </div>
-            <div class="mb-3 row">
-              <label
-                for={`${
-                  isToggleClicked
-                    ? "descriptionInputDark"
-                    : "descriptionInputLight"
-                }`}
-                className={`col-6 fw-bold form-label ${
-                  isToggleClicked ? "text-info" : "text-primary"
-                }`}
-              >
-                Task Description
-              </label>
-              <span className={`col-6 text-end text-danger`}>
-                {descriptionError}
-              </span>
-              <textarea
-                placeholder="write your task decsciption..."
-                className={`form-control border-secondary ${descInputBorderColor} ${
-                  isToggleClicked ? " bg-dark text-light" : "bg-light text-dark"
-                }`}
-                id={`${
-                  isToggleClicked
-                    ? "descriptionInputDark"
-                    : "descriptionInputLight"
-                }`}
-                value={todoDescription}
-                onChange={(e) => setTodoDescription(e.target.value)}
-              />
-            </div>
-
-            <div className="row text-center">
-              <span className="col-4">
-                <button
-                  className={`w-75 btn btn-outline-info ${
-                    isToggleClicked ? "text-light" : "text-dark"
-                  }`}
-                  onClick={() => clearField()}
-                >
-                  Clear
-                </button>
-              </span>
-              <span className="col-8">
-                {!isEditTaskClicked ? (
-                  <button
-                    type="button"
-                    onClick={() => addTask(todoHeadline, todoDescription)}
-                    className={`btn w-100 text-light btn-success`}
-                  >
-                    Add Task
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => updateTask(todoHeadline, todoDescription)}
-                    className={`btn w-100 text-light btn-primary`}
-                  >
-                    Update Task
-                  </button>
-                )}
-              </span>
-            </div>
-          </div>
-
-          <div class="row mt-2 pt-2 justify-content-start">
+        <div className="row">
+          <div className="col-sm-4">
             <div
-              className={`col-6 fs-3 ${
-                isToggleClicked ? "text-light" : "text-dark"
+              className={`border rounded p-4 ${
+                isToggleClicked ? "border-secondary" : ""
               }`}
             >
-              Tasks
+              <div class="mb-3 row">
+                <label
+                  for={`${
+                    isToggleClicked ? "headlineInputDark" : "headlineInputLight"
+                  }`}
+                  className={`col-6 fw-bold form-label text-start ${
+                    isToggleClicked ? "text-info" : "text-primary"
+                  }`}
+                >
+                  Task headline
+                </label>
+                <span className={`col-6 text-end text-danger`}>
+                  {headlineError}
+                </span>
+                <input
+                  type="text"
+                  id={`${
+                    isToggleClicked ? "headlineInputDark" : "headlineInputLight"
+                  }`}
+                  placeholder="write your task headline..."
+                  class="form-control"
+                  className={`form-control input border-secondary ${headlineBorder} ${
+                    isToggleClicked
+                      ? "bg-dark text-light "
+                      : "bg-light text-dark"
+                  } `}
+                  value={todoHeadline}
+                  onChange={(e) => setTodoHeadline(e.target.value)}
+                />
+              </div>
+              <div class="mb-3 row">
+                <label
+                  for={`${
+                    isToggleClicked
+                      ? "descriptionInputDark"
+                      : "descriptionInputLight"
+                  }`}
+                  className={`col-6 fw-bold form-label ${
+                    isToggleClicked ? "text-info" : "text-primary"
+                  }`}
+                >
+                  Task Description
+                </label>
+                <span className={`col-6 text-end text-danger`}>
+                  {descriptionError}
+                </span>
+                <textarea
+                  placeholder="write your task decsciption..."
+                  className={`form-control border-secondary ${descInputBorderColor} ${
+                    isToggleClicked
+                      ? " bg-dark text-light"
+                      : "bg-light text-dark"
+                  }`}
+                  id={`${
+                    isToggleClicked
+                      ? "descriptionInputDark"
+                      : "descriptionInputLight"
+                  }`}
+                  value={todoDescription}
+                  onChange={(e) => setTodoDescription(e.target.value)}
+                />
+              </div>
+
+              <div className="row text-center">
+                <span className="col-4">
+                  <button
+                    className={`w-75 btn btn-outline-info ${
+                      isToggleClicked ? "text-light" : "text-dark"
+                    }`}
+                    onClick={() => clearField()}
+                  >
+                    Clear
+                  </button>
+                </span>
+                <span className="col-8">
+                  {!isEditTaskClicked ? (
+                    <button
+                      type="button"
+                      onClick={() => addTask(todoHeadline, todoDescription)}
+                      className={`btn w-100 text-light btn-success`}
+                    >
+                      Add Task
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => updateTask(todoHeadline, todoDescription)}
+                      className={`btn w-100 text-light btn-primary`}
+                    >
+                      Update Task
+                    </button>
+                  )}
+                </span>
+              </div>
             </div>
-            <div className="col-6 text-start p-2" style={{ color: msgColor }}>
-              {actionMessage}
-            </div>
-            <hr className={`${isToggleClicked ? "text-light" : "text-dark"}`} />
           </div>
 
-          <div>
+          <div className="col-sm-7 mx-2">
+            <div class="row mt-2 pt-2 justify-content-start">
+              <div
+                className={`col-6 fs-3 text-center ${
+                  isToggleClicked ? "text-light" : "text-dark"
+                }`}
+              >
+                Task List
+              </div>
+              <div className="col-6 text-start p-2" style={{ color: msgColor }}>
+                {actionMessage}
+              </div>
+              <hr
+                className={`${isToggleClicked ? "text-light" : "text-dark"}`}
+              />
+            </div>
             <div>
               {todos.length > 0 ? (
                 <table
@@ -340,10 +347,7 @@ export default function TodosPureReact() {
                       >
                         Description
                       </th>
-                      <th
-                        scope="col"
-                        className={`col-4 text-start text-danger`}
-                      >
+                      <th scope="col" className={`col-4 text-end text-danger`}>
                         Edit/Delete
                       </th>
                     </tr>
@@ -355,7 +359,7 @@ export default function TodosPureReact() {
                         <td className="col-4">{todo.headline}</td>
                         <td className="col-4">{todo.description}</td>
 
-                        <td className="col-4 p-2">
+                        <td className="col-4 p-2 text-end">
                           <span className="text-start">
                             {/* <Tooltip anchorSelect=".edit-desc" place="top">
                                 Edit Description
@@ -375,8 +379,9 @@ export default function TodosPureReact() {
                                 editedTodoId === todo.id ? (
                                   <span
                                     id="edit-cancel"
-                                    className="text-danger"
-                                    style={{ fontSize: "12px" }}
+                                    className={`${
+                                      isToggleClicked ? "text-light" : ""
+                                    }`}
                                   >
                                     Cancel
                                   </span>
